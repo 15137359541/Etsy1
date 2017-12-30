@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Etsy搜索平台</title>
+    <!--切记jQuery一定要在bootstrap之前，否则，会报错-->
+    <!--引入jq-->
+    <script src="/static/es_platform/jquery/jquery-1.12.4.min.js"></script>
+    <!--引入bootstrap的CSS样式和js样式-->
+    <link href="/static/es_platform/css/bootstrap.css" rel="stylesheet" type="text/css"
+          media="all"/>
+    <script src="/static/es_platform/js/bootstrap.js"></script>
+
+    <style>
+        .left_div{
+            background:indianred;
+        }
+        .right_div{
+            background:lightgoldenrodyellow;
+        }
+        .search_div{
+            background:#ccc;
+            width:100%;
+            height:300px;
+
+        }
+        .message_div{
+            background:#999;
+            width:100%;
+            height:10000px;
+        }
+        .shopping_name,.prcie_title{
+            display:inline-block;
+        }
+        .search_content{
+            width:400px;
+            height:52px;
+
+        }
+        input{
+            border-radius: 5px;
+            border-color: #66B1D2;
+        }
+        body{
+            font-size:12px;
+        }
+
+    </style>
+</head>
+<body>
+<h1>etsy 搜索平台</h1>
+<div class=".container-fluid">
+    <div class="row">
+        <div class="col-xs-6 col-md-2 left_div">
+            <div class="mainContent">展示</div>
+             <div class="row row1 scroll-pane">
+                    <form action="/smart_user/goods_list/" method="POST">
+                    <label class="checkbox"><input type="checkbox"
+                                                   name="kw_color"
+                                                   checked=""
+                                                   value="白"><i></i>White
+                    </label>
+                    <label class="checkbox"><input type="checkbox"
+                                                   name="kw_color"
+                                                   value="粉"><i></i>Pink
+                    </label>
+                    <label class="checkbox"><input type="checkbox"
+                                                   name="kw_color"
+                                                   value="金"><i></i>
+                        Gold</label>
+                    <label class="checkbox"><input type="checkbox"
+                                                   name="kw_color"
+                                                   value="蓝"><i></i>
+                        Blue</label>
+                    <label class="checkbox"><input type="checkbox"
+                                                   name="kw_color"
+                                                   value="橙"><i></i>
+                        Orange</label>
+                    <label class="checkbox"><input type="checkbox"
+                                                   name="kw_color"
+                                                   value="黑"
+                    ><i></i> Black</label>
+                        <input type="submit" value="search">
+                    </form>
+                </div>
+        </div>
+        <div class="col-xs-12 col-sm-6 col-md-10 right_div">
+            <div class="row search_div">
+
+
+                <form action="{% url 'platformes:tatalGoods' %}" method="get">
+                    <h3 class="shopping_name">请输入商品名：</h3>
+                        <input type="text" name="search" placeholder="search name" class="search_content">
+                    <br>
+                    <h4 class="prcie_title">请输入价格范围：</h4>
+                    最低价:<input type="text" name="price_low" placeholder="lowest price">
+                    最高价:<input type="text" name="price_high" placeholder="high price"><br>
+                    <input type="submit" value="search">
+                </form>
+
+
+            </div>
+
+            <div class="row message_div">
+                
+            <table class="table invoice-table table-striped table-hover info">
+                <thead>
+                <tr class="success">
+                    <th>序号</th>
+                    <th>图片</th>
+                    <th>商电名</th>
+                    <th>标题</th>
+                    <th>价格</th>
+                    <th>评论数</th>
+                    <th>收藏人数</th>
+                    <th>标签</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+
+
+                <tbody>
+                 {% if all_goods %}
+                {% for shopping in all_goods %}
+                <tr class="active">
+                    <td style="width:8%;text-align:center;line-height:7px">
+                        {{forloop.counter}}
+                    </td>
+
+
+                    <td style="width:25%">
+                        <a href="{{shopping.good_url}}">
+                        <img src="/{{shopping.img}}" alt="no"
+                             style="width:100px;height:100px"> </a>
+                    </td>
+
+                        <td style="width:16%">
+                            <a href="{{shopping.shop_url}}">
+                            {{shopping.shop_name }}</a>
+                        </td>
+
+
+                        <td style="width:20%">
+                            <a href="{{shopping.good_url}}">
+
+                                <strong>{{shopping.title }}</strong>
+                            </a>
+                        </td>
+
+                    <td style="width:20%">
+                        <strong><span>现价：</span>${{shopping.price_now }}</strong><br>
+                        <strong><span>原价：</span>${{shopping.price_ago }}</strong>
+                    </td>
+
+                    <td style="width:15%">{{shopping.feedback}}</td>
+                    <td style="width:15%">{{shopping.favorited}}</td>
+
+                    <td style="width:15%">
+                        <span>{{shopping.label_one }}</span>
+                        <span>{{shopping.label_two}}</span>
+                    </td>
+
+                    <td><a
+                            href={{shopping.good_url}}>查看商品详情</a>
+                    </td>
+                </tr>
+                {% endfor %}
+               {% else %}
+                <br><br><h3>please search again another words</h3><br>
+                {% endif %}
+                </tbody>
+
+</table>
+                
+                <!--对商品进行分页-->
+                <ul class="pagination" id="pager">
+        {#上一页按钮开始#}
+        {# 如果当前页有上一页#}
+        {% if all_goods.has_previous %}
+            {#  当前页的上一页按钮正常使用#}
+            <li class="previous"><a href="/platformes/tatalGoods/?page={{ all_goods.previous_page_number }}" class="active_num">上一页</a></li>
+        {% else %}
+            {# 当前页的不存在上一页时,上一页的按钮不可用#}
+            <li class="previous disabled"><a href="#">上一页</a></li>
+        {% endif %}
+        {#上一页按钮结束#}
+                    {# 添加首页 #}
+                    <li class="last" ><a href="/platformes/tatalGoods/?page=1" class="active_num">首页</a></li>
+
+        {# 页码开始#}
+        {% for num in paginator %}
+
+            {% if num == currentPage %}
+                <li class="item active" ><a href="/platformes/tatalGoods/?page={{ num }}" class="active_num">{{ num }}</a></li>
+            {% else %}
+                <li class="item"><a href="/platformes/tatalGoods/?page={{ num }}" class="active_num">{{ num }}</a></li>
+
+            {% endif %}
+        {% endfor %}
+
+                    {# 添加最后一页#}
+                    <li class="last" ><a href="/platformes/tatalGoods/?page={{ page_obj.num_pages }}" class="active_num">尾页</a></li>
+
+        {#页码结束#}
+        {# 下一页按钮开始#}
+        {% if all_goods.has_next %}
+            <li class="next"><a href="/platformes/tatalGoods/?page={{ all_goods.next_page_number }}" class="active_num">下一页</a></li>
+        {% else %}
+            <li class="next disabled"><a href="#">下一页</a></li>
+        {% endif %}
+        {# 下一页按钮结束#}
+    </ul>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+
+
+
+
+<!--<button id="publish">按钮</button>-->
+<script>
+
+    $(".active_num").click(function(){
+     alert("发表成功")
+        alert($(this).text())
+    })
+
+
+//    $(".active_num").click(function(){
+//
+//        var url = "/platformes/tatalGoods/";
+//        var data = $('.content').val();
+//        alert(data);
+//        $.ajax({
+//            type : "get",
+////            async : false,  //同步请求
+//            url : url,
+//            data :{'data':data},
+//            success:function(dates){
+//                alert(dates);
+//                console.log(dates);
+//
+//                $(".mainContent").html(dates);//要刷新的div
+//            },
+//            error: function() {
+//               // alert("失败，请稍后再试！");
+//            }
+//        });
+//    });
+
+</script>
+
+</body>
+</html>

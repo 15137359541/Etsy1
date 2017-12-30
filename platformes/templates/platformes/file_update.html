@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>文件上传</title>
+</head>
+<body>
+<form action="{% url 'platformes:file_update'%}"
+                          method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+                        <div class="form_group">
+							<label>标题</label>
+							<input type="text" name="title">
+						</div>
+                        <div class="form_group">
+							<label>原价</label>
+							<input type="text" name="price_ago">
+						</div>
+                        <div class="form_group">
+							<label>上传头像：</label>
+							<input type="file" name="img">
+						</div>
+
+						<div class="form_group">
+							<label>现价：</label>
+							<input type="text" name="price_now">
+						</div>
+
+						<div class="form_group">
+							<label>评论数：</label>
+							<input type="text" name="feedback">
+						</div>
+                        <div class="form_group">
+							<label>收藏数：</label>
+							<input type="text" name="favorited">
+						</div>
+
+						<input type="submit" name="" value="提交" class="info_submit">
+					</form>
+</body>
+</html>
